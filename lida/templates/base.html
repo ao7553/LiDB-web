@@ -1,0 +1,106 @@
+<!--
+Requires in context:
+  title: str
+  content_heading: str
+//-->
+
+{% load static %}
+
+<!doctype html>
+<html lang="en" class="h-100">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="Martin Hanicinec">
+
+  <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"/>
+
+  {# CSS #}
+  <link rel="stylesheet" href="{% static "bootstrap/bootstrap.css" %}">
+  {% block css %}{% endblock %}
+  <link rel="stylesheet" href="{% static "main.css" %}">
+
+  {% if title %}
+    <title>LiDB - {{ title }}</title>
+  {% else %}
+    <title>LiDB</title>
+  {% endif %}
+</head>
+
+<body class="d-flex flex-column h-100 bg-dark text-light">
+
+<header>
+  <!-- Fixed navbar -->
+  <nav class="navbar navbar-expand-sm navbar-dark site-header">
+    <div class="container">
+      <a class="navbar-brand me-5" href="{% url 'site-home' %}">
+        <span class="site-accent">LiDB</span>
+      </a>
+      <span class="navbar-text small text-white">
+        <em><span class="site-accent">Li</span>fetimes <span class="site-accent">D</span>ata<span class="site-accent">B</span>ase</em>
+      </span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+              aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link{% data_active request %}" href="{% url 'molecule-list' %}">Data</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link{% about_active request %}" href="{% url 'site-about' %}">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link{% api_active request %}" href="{% url 'api-about' %}">API</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% contact_active request %}" href="{% url 'site-contact' %}">Contact</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<!-- Begin page content -->
+<main class="flex-shrink-0">
+  <div class="container pt-4 pb-4 ps-5 pe-5">
+    {% autoescape off %}
+    <div class="container pb-2">
+      <h4 class="text-center">
+        {{ content_heading }}
+      </h4>
+    </div>
+    {% block content %}{% endblock %}
+    {% endautoescape %}
+  </div>
+</main>
+
+<footer class="footer mt-auto py-3 site-footer">
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <span class="text-muted small">
+            LiDB is funded by STFC project ST/W000504/1.<br>
+            It uses ExoMol data supported by ERC Advanced Investigator Projects 267219 and 883830.
+        </span>
+      </div>
+      <div class="col">
+        <div class="float-end">
+          <img src="{% static "logo-stfc.png" %}" alt="STFC logo"/>
+          <img src="{% static "logo-erc.png" %}" alt="ERC logo" class="ms-4"/>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+{# javascript: #}
+<script src="{% static "bootstrap/bootstrap.bundle.min.js" %}"></script>
+{% block javascript %}{% endblock %}
+
+</body>
+</html>
