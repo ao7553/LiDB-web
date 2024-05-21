@@ -2,7 +2,7 @@
 LiDB-web
 ********
 
-The Django web framework for the LiDB database.
+The Django web framework for the `LiDB datbase <https://exomol.com/lidb>`_.
 
 LiDB provides molecular vibrational and vibronic state radiative lifetimes, created with
 the aim of enabling radiative effects to be properly captured in low-temperature plasma
