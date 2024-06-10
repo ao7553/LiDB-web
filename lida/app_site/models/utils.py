@@ -5,6 +5,8 @@ from pyvalem.states import AtomicTermSymbol
 from pyvalem.states import AtomicConfiguration
 from pyvalem.states import RacahSymbol
 from pyvalem.states import CompoundLSCoupling
+from pyvalem.states.J1K_LK_coupling import J1K_LK_Coupling
+from pyvalem.states.J1K_LK_coupling import J1K_LK_CouplingError
 
 from django.db import models
 
@@ -100,6 +102,7 @@ def validate_and_parse_vib_state_str(vib_state_str):
         vib_state_html = AtomicConfiguration(vib_state_str).html
         quanta_int = [1]
         return quanta_int, vib_state_html
+    #ALEC
 
     invalid_state_str_msg = (
         f'Vibrational string "{vib_state_str}" is not in the form of '
@@ -147,12 +150,18 @@ def canonicalise_and_parse_el_state_str(el_state_str):
     if el_state_str == "":
         return "", ""
     #ALEC
-    # Check if the el_state_str has the form "2[3/2]"
+    # Handling for the special case using J1K_LK_Coupling or RacahSymbol
     if "[" in el_state_str and "]" in el_state_str:
-        # Custom handling for the special case
-        canonicalised_el_state_str = repr(RacahSymbol(el_state_str))
-        el_state_html = get_el_state_html(el_state_str)
-        return canonicalised_el_state_str, el_state_html
+        # Check if it matches J1K_LK_Coupling pattern like "2[4]" or "2[3/2]o"
+        try:
+            canonicalised_el_state_str = repr(J1K_LK_Coupling(el_state_str))
+            el_state_html = get_el_state_html(el_state_str)
+            return canonicalised_el_state_str, el_state_html
+        except J1K_LK_CouplingError:
+            # If J1K_LK_Coupling parsing fails, try RacahSymbol
+            canonicalised_el_state_str = repr(RacahSymbol(el_state_str))
+            el_state_html = get_el_state_html(el_state_str)
+            return canonicalised_el_state_str, el_state_html
     #Check if the first character of el_state_str is a digit to indicate atomic term notation
     if el_state_str[0].isdigit() or (len(el_state_str) > 1 and el_state_str[1].isdigit()):
         canonicalised_el_state_str = repr(AtomicTermSymbol(el_state_str))
@@ -169,9 +178,14 @@ def get_el_state_html(el_state_str):
     if el_state_str == "":
         return ""
     #ALEC
-    # Check if the el_state_str has the Racah Symbol form, e.g. 2[3/2]
+    # Check if the el_state_str has J1K_LK_Coupling Racah Symbol form, e.g. 2[3/2]
     if "[" in el_state_str and "]" in el_state_str:
-        return RacahSymbol(el_state_str).html
+        try:
+            # Attempt to parse as J1K_LK_Coupling
+            return J1K_LK_Coupling(el_state_str).html
+        except J1K_LK_CouplingError:
+            # If parsing as J1K_LK_Coupling fails, attempt to parse as RacahSymbol
+            return RacahSymbol(el_state_str).html
     #Check if the first character of el_state_str is a digit to indicate atomic term notation
     if el_state_str[0].isdigit() or (len(el_state_str) > 1 and el_state_str[1].isdigit()):
         return AtomicTermSymbol(el_state_str).html
