@@ -1,6 +1,6 @@
 # requires python>=3.8
 
-pyvalem>=2.5.2
+pyvalem>=2.6.1
 django<4
 django-datatables-serverside
 mysqlclient
